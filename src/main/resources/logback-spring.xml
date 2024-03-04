@@ -1,0 +1,137 @@
+<configuration debug="true">
+	<!-- Appenders -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>%d %5p [%c] %m%n</Pattern>
+			<!--
+				p : 로깅레벨출력
+				[] : 경로
+				m : 메세지
+				n : 줄바꿈
+			 -->
+		</encoder>
+	</appender>
+
+	<!-- ConsoleAppender -->
+	<appender name="console-infolog" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>%d %5p %m%n</Pattern>
+		</encoder>
+	</appender>
+
+	<!-- SMSAppender : 사용자정의 Appender -->
+<!--	<appender name="sms-appender" class="board.common.customappender.SMSCustomAppender">-->
+<!--		<apiKey>NCSWAY47NLQRR93R</apiKey>-->
+<!--		<apiSecret>DVLLRJXDN5KVWOFV8M0CGHHO4F9YBXWZ</apiSecret>-->
+<!--		<fromPhoneNumber>01036502983</fromPhoneNumber>-->
+<!--		<toPhoneNumber>01036502983</toPhoneNumber>-->
+<!--	</appender>-->
+
+	<!--SMTPAppender-->
+<!--	<appender name="email-appender" class="ch.qos.logback.classic.net.SMTPAppender">-->
+<!--		<smtpHost>smtp.gmail.com</smtpHost>-->
+<!--		<smtpPort>587</smtpPort>-->
+<!--		<username>44goodluck44@gmail.com</username>-->
+<!--		<password>fiwjpkmasqdvfmxp</password>-->
+<!--		<STARTTLS>true</STARTTLS>-->
+<!--		<to>44goodluck44@gmail.com</to>-->
+<!--		<from>44goodluck44@gmail.com</from>-->
+<!--		<subject>Log message from %logger{0}</subject>-->
+<!--		<layout class="ch.qos.logback.classic.html.HTMLLayout">-->
+<!--			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>-->
+<!--		</layout>-->
+<!--	</appender>-->
+
+	<!-- RollingFileAppender -->
+	<appender name="rolling-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>C:\logs\file\testFile.log</file>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+		</filter>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>./was-logs/info.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>2</maxHistory>
+		</rollingPolicy>
+	</appender>
+
+	<!-- 로거 -->
+	<!-- 루트 로거 -->
+	<logger name="jdbc.sqlonly" level="OFF" >
+		<appender-ref ref="console"/>
+	</logger>
+	<logger name="jdbc.resultsettable" level="OFF" >
+		<appender-ref ref="console"/>
+	</logger>
+	<logger name="jdbc.sqltiming" level="OFF"/>
+	<logger name="jdbc.audit" level="OFF"/>
+	<logger name="jdbc.connection" level="OFF"/>
+	<logger name="jdbc" level="OFF"/>
+	<logger name="org.thymeleaf" level="OFF"/>
+	<logger name="board.board.service" level="error" additivity="false">
+	</logger>
+	<root level="error">
+		<appender-ref ref="console"/>
+		<appender-ref ref="rolling-appender"/>
+<!--		<appender-ref ref="email-appender"/>-->
+		<!--<appender-ref ref="sms-appender"/>-->
+	</root>
+	<!-- 루트 로거란?
+ 		프로그래밍에서 로깅 시스템의 핵심 개념 중 하나입니다.
+ 		로깅은 프로그램의 실행 중에 발생하는 정보를 기록하는 것을 의미합니다.
+		루트 로거는 로깅 시스템에서 최상위에 있는 로거를 가리킵니다
+ 		root 태그에 설정된 level에 따라 출력하는 레벨이 달라진다
+ 	 -->
+</configuration>
+		<!--
+        Logback : 스프링에서 지원해주는 Framework
+
+        1. Logger
+            logger 종류{
+                trace
+                debug
+                info
+                warn
+                error
+                }
+
+        2. Appender
+            출력하는 방법을 정의{ 예를들어 => <appender name="email-appender" class="ch.qos.logback.classic.net.SMTPAppender">
+                ConsoleAppender : 콘솔에 출력
+                FileAppender : 파일에 로그를 출력
+                RollingFileAppender : 크기 또는 시간에 따라 로그 파일을 자동으로 회전하면서 출력
+                SMTPAppender : 이메일로 로그를 전송
+                SMSAppender : 문자로 로그를 전송
+            }
+
+        3. encoder / Layout
+             로그 이벤트를 텍스트 형식으로 변환{
+                 Encoder(예를들어 => <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>)
+                     텍스트 형식으로 변환
+                     변환된 텍스트는 Appender가 이를 적절한 대상(파일, 콘솔, 네트워크 등)으로 출력
+                     다양한 포맷을 지원, 포맷을 커스터마이징 가능(예를들어 JSON 형식으로 로그를 출력하거나 특정 패턴에 따라 로그를 포맷)
+                Layout(예를들어 => <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>, 정의한 내용이 들어간다)
+                    Encoder의 일부로써, Encoder가 생성한 텍스트를 어떻게 표현할지를 정의
+                    텍스트 형식의 로그 이벤트를 구성하고, 해당 형식에 맞추어 포맷
+                    로그 메시지의 시간, 스레드, 로거 이름, 로그 레벨 등을 포함하며, 포맷을 통해 사용자가 원하는 형식으로 로그를 출력
+             }
+
+                    Simple Logging Facade for java (Slf4j)
+        log client =======================================> Logging Franmework 제품들에게 의존한다
+        Logger(interface)
+                                    JDBC
+        xxxDao ===========================================> DBMS 제품들에 의존한다
+
+        Logging Framework
+         => Logback
+
+        Apache
+        comming-logging 라이브러리
+        Log4j, Log4j2
+        Slf4j
+        -->
